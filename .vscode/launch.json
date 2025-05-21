@@ -1,0 +1,23 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug Account Service",
+            "request": "launch",
+            "mainClass": "com.reborn.account_service.AccountServiceApplication",
+            "projectName": "account-service",
+            "env": {
+                "SPRING_PROFILES_ACTIVE": "local"
+            },
+            "args": [
+                "--spring.profiles.active=local",
+                "--spring.devtools.restart.enabled=true"
+            ],
+            "vmArgs": [
+                "-Dspring.profiles.active=local",
+                "-Dspring.devtools.restart.enabled=true"
+            ]
+        },
+    ]
+}
