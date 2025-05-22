@@ -2,6 +2,7 @@ package com.reborn.account_service.service;
 
 import com.reborn.account_service.dto.LoginRequest;
 import com.reborn.account_service.dto.SignupRequest;
+import com.reborn.account_service.dto.SignupResponse;
 import com.reborn.account_service.model.User;
 import com.reborn.account_service.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +18,9 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public User signup(SignupRequest request) {
+    public SignupResponse signup(SignupRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already exists");
+            return SignupResponse.error("Email already exists");
         }
 
         User user = new User();
@@ -27,7 +28,8 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setName(request.getName());
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        return SignupResponse.success(savedUser);
     }
 
     public User login(LoginRequest request) {

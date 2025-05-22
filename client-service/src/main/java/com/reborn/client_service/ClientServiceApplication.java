@@ -3,6 +3,7 @@ package com.reborn.client_service;
 import com.reborn.client_service.config.ServiceConfig;
 import com.reborn.client_service.dto.LoginRequest;
 import com.reborn.client_service.dto.SignupRequest;
+import com.reborn.client_service.dto.SignupResponse;
 import com.reborn.client_service.model.Product;
 import com.reborn.client_service.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,13 +32,25 @@ public class ClientServiceApplication {
     @Bean
     public CommandLineRunner run(RestTemplate restTemplate) {
         return args -> {
-            
             // 1. Signup
             System.out.println("\n1. Calling signup...");
             String signupUrl = serviceConfig.getAccountServiceUrl() + "/api/users/signup";
             SignupRequest signupRequest = new SignupRequest("test@example.com", "password123", "Test User");
-            User signupResponse = restTemplate.postForObject(signupUrl, signupRequest, User.class);
-            System.out.println("Signup response: " + signupResponse);
+            SignupResponse signupResponse = restTemplate.postForObject(signupUrl, signupRequest, SignupResponse.class);
+            
+            if (!signupResponse.isSuccess()) {
+                System.out.println("Signup failed: " + signupResponse.getMessage());
+                // If user already exists, we can proceed with login
+                if (signupResponse.getMessage().equals("Email already exists")) {
+                    System.out.println("User already exists, proceeding with login...");
+                } else {
+                    // For other errors, we should stop
+                    System.out.println("Unexpected error during signup, stopping...");
+                    return;
+                }
+            } else {
+                System.out.println("Signup successful: " + signupResponse.getUser());
+            }
 
             // 2. Signin
             System.out.println("\n2. Calling signin...");

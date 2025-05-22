@@ -2,6 +2,7 @@ package com.reborn.account_service.controller;
 
 import com.reborn.account_service.dto.LoginRequest;
 import com.reborn.account_service.dto.SignupRequest;
+import com.reborn.account_service.dto.SignupResponse;
 import com.reborn.account_service.model.User;
 import com.reborn.account_service.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +17,9 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<User> signup(@RequestBody SignupRequest request) {
-        User user = userService.signup(request);
-        return ResponseEntity.ok(user);
+    public ResponseEntity<SignupResponse> signup(@RequestBody SignupRequest request) {
+        SignupResponse response = userService.signup(request);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")

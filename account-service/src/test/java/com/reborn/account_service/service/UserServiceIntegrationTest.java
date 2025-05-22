@@ -2,6 +2,7 @@ package com.reborn.account_service.service;
 
 import com.reborn.account_service.dto.LoginRequest;
 import com.reborn.account_service.dto.SignupRequest;
+import com.reborn.account_service.dto.SignupResponse;
 import com.reborn.account_service.model.User;
 import com.reborn.account_service.repository.UserRepository;
 import com.reborn.account_service.util.TestDataUtil;
@@ -29,29 +30,47 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    public void testSignup() {
+    public void testSignup_Success() {
         // Given
         SignupRequest request = TestDataUtil.createSignupRequest();
 
         // When
-        User user = userService.signup(request);
+        SignupResponse response = userService.signup(request);
 
         // Then
-        assertNotNull(user);
-        assertNotNull(user.getId());
-        assertEquals(request.getEmail(), user.getEmail());
+        assertTrue(response.isSuccess());
+        assertEquals("User registered successfully", response.getMessage());
+        assertNotNull(response.getUser());
+        assertNotNull(response.getUser().getId());
+        assertEquals(request.getEmail(), response.getUser().getEmail());
         
         // Verify user is saved in database
         User savedUser = userRepository.findByEmail(request.getEmail()).orElse(null);
         assertNotNull(savedUser);
-        assertEquals(user.getId(), savedUser.getId());
+        assertEquals(response.getUser().getId(), savedUser.getId());
+    }
+
+    @Test
+    public void testSignup_UserExists() {
+        // Given
+        SignupRequest request = TestDataUtil.createSignupRequest();
+        userService.signup(request); // First signup
+
+        // When
+        SignupResponse response = userService.signup(request); // Second signup with same email
+
+        // Then
+        assertFalse(response.isSuccess());
+        assertEquals("Email already exists", response.getMessage());
+        assertNull(response.getUser());
     }
 
     @Test
     public void testLogin() {
         // Given
         SignupRequest signupRequest = TestDataUtil.createSignupRequest();
-        User createdUser = userService.signup(signupRequest);
+        SignupResponse signupResponse = userService.signup(signupRequest);
+        User createdUser = signupResponse.getUser();
         
         LoginRequest loginRequest = TestDataUtil.createLoginRequest();
 

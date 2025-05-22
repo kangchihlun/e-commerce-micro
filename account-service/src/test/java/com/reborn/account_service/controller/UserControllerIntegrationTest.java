@@ -3,6 +3,7 @@ package com.reborn.account_service.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.reborn.account_service.dto.LoginRequest;
 import com.reborn.account_service.dto.SignupRequest;
+import com.reborn.account_service.dto.SignupResponse;
 import com.reborn.account_service.model.User;
 import com.reborn.account_service.service.UserService;
 import com.reborn.account_service.util.TestDataUtil;
@@ -48,19 +49,38 @@ public class UserControllerIntegrationTest {
     }
 
     @Test
-    public void testSignup() throws Exception {
+    public void testSignup_Success() throws Exception {
         SignupRequest request = TestDataUtil.createSignupRequest();
         User expectedUser = TestDataUtil.createTestUser();
+        SignupResponse expectedResponse = SignupResponse.success(expectedUser);
 
-        when(userService.signup(any(SignupRequest.class))).thenReturn(expectedUser);
+        when(userService.signup(any(SignupRequest.class))).thenReturn(expectedResponse);
 
         mockMvc.perform(post("/api/users/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(expectedUser.getId()))
-                .andExpect(jsonPath("$.email").value(expectedUser.getEmail()))
-                .andExpect(jsonPath("$.name").value(expectedUser.getName()));
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("User registered successfully"))
+                .andExpect(jsonPath("$.user.id").value(expectedUser.getId()))
+                .andExpect(jsonPath("$.user.email").value(expectedUser.getEmail()))
+                .andExpect(jsonPath("$.user.name").value(expectedUser.getName()));
+    }
+
+    @Test
+    public void testSignup_UserExists() throws Exception {
+        SignupRequest request = TestDataUtil.createSignupRequest();
+        SignupResponse expectedResponse = SignupResponse.error("Email already exists");
+
+        when(userService.signup(any(SignupRequest.class))).thenReturn(expectedResponse);
+
+        mockMvc.perform(post("/api/users/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.message").value("Email already exists"))
+                .andExpect(jsonPath("$.user").isEmpty());
     }
 
     @Test
