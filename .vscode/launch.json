@@ -1,0 +1,78 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug Account Service",
+            "request": "launch",
+            "mainClass": "com.reborn.account_service.AccountServiceApplication",
+            "projectName": "account-service",
+            "env": {
+                "SPRING_PROFILES_ACTIVE": "local"
+            },
+            "args": [
+                "--spring.profiles.active=local",
+                "--spring.devtools.restart.enabled=true"
+            ],
+            "vmArgs": [
+                "-Dspring.profiles.active=local",
+                "-Dspring.devtools.restart.enabled=true"
+            ]
+        },
+        {
+            "type": "java",
+            "name": "Debug Product Service",
+            "request": "launch",
+            "mainClass": "com.reborn.product_service.ProductServiceApplication",
+            "projectName": "product-service",
+            "env": {
+                "SPRING_PROFILES_ACTIVE": "local"
+            },
+            "args": [
+                "--spring.profiles.active=local",
+                "--spring.devtools.restart.enabled=true"
+            ],
+            "vmArgs": [
+                "-Dspring.profiles.active=local",
+                "-Dspring.devtools.restart.enabled=true"
+            ]
+        },
+        {
+            "type": "java",
+            "name": "Debug Order Service",
+            "request": "launch",
+            "mainClass": "com.reborn.order_service.OrderServiceApplication",
+            "projectName": "order-service",
+            "env": {
+                "SPRING_PROFILES_ACTIVE": "local"
+            },
+            "args": [
+                "--spring.profiles.active=local",
+                "--spring.devtools.restart.enabled=true"
+            ],
+            "vmArgs": [
+                "-Dspring.profiles.active=local",
+                "-Dspring.devtools.restart.enabled=true"
+            ],
+            "cwd": "${workspaceFolder}/order-service"
+        },
+        {
+            "type": "java",
+            "name": "Debug Client Service",
+            "request": "launch",
+            "mainClass": "com.reborn.client_service.ClientServiceApplication",
+            "projectName": "client-service",
+            "env": {
+                "SPRING_PROFILES_ACTIVE": "local"
+            },
+            "args": [
+                "--spring.profiles.active=local",
+                "--spring.devtools.restart.enabled=true"
+            ],
+            "vmArgs": [
+                "-Dspring.profiles.active=local",
+                "-Dspring.devtools.restart.enabled=true"
+            ]
+        }
+    ]
+}
