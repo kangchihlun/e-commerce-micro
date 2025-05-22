@@ -6,11 +6,11 @@ import com.reborn.client_service.dto.SignupRequest;
 import com.reborn.client_service.dto.SignupResponse;
 import com.reborn.client_service.model.Product;
 import com.reborn.client_service.model.User;
+import com.reborn.client_service.model.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
@@ -20,17 +20,15 @@ public class ClientServiceApplication {
     @Autowired
     private ServiceConfig serviceConfig;
 
+    @Autowired
+    private RestTemplate restTemplate;
+
     public static void main(String[] args) {
         SpringApplication.run(ClientServiceApplication.class, args);
     }
 
     @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        return builder.build();
-    }
-
-    @Bean
-    public CommandLineRunner run(RestTemplate restTemplate) {
+    public CommandLineRunner run() {
         return args -> {
             // 1. Signup
             System.out.println("\n1. Calling signup...");
@@ -92,6 +90,28 @@ public class ClientServiceApplication {
             updateRequest.setAccountId(loginResponse.getId());
             restTemplate.put(updateProductUrl, updateRequest);
             System.out.println("Updated product: " + updateRequest);
+
+            // 7. Create order
+            System.out.println("\n7. Creating order...");
+            String createOrderUrl = serviceConfig.getOrderServiceUrl() + "/api/orders";
+            Order newOrder = new Order();
+            newOrder.setAccountId(loginResponse.getId());
+            newOrder.setStatus("PENDING");
+            newOrder.setTotalAmount(199.99); // Using the updated product price
+            Order createdOrder = restTemplate.postForObject(createOrderUrl, newOrder, Order.class);
+            System.out.println("Created order: " + createdOrder);
+
+            // 8. Get order by ID
+            System.out.println("\n8. Getting order by ID...");
+            String getOrderUrl = serviceConfig.getOrderServiceUrl() + "/api/orders/" + createdOrder.getId();
+            Order retrievedOrder = restTemplate.getForObject(getOrderUrl, Order.class);
+            System.out.println("Retrieved order: " + retrievedOrder);
+
+            // 9. Get orders by account
+            System.out.println("\n9. Getting orders by account...");
+            String getOrdersByAccountUrl = serviceConfig.getOrderServiceUrl() + "/api/orders/account/" + loginResponse.getId();
+            Order[] accountOrders = restTemplate.getForObject(getOrdersByAccountUrl, Order[].class);
+            System.out.println("Account orders: " + java.util.Arrays.toString(accountOrders));
         };
     }
 }
