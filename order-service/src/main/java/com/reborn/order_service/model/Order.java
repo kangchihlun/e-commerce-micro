@@ -1,6 +1,6 @@
 package com.reborn.order_service.model;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
 
