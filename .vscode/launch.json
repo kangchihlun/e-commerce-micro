@@ -73,6 +73,25 @@
                 "-Dspring.profiles.active=local",
                 "-Dspring.devtools.restart.enabled=true"
             ]
+        },
+        {
+            "type": "java",
+            "name": "Debug Expense Service",
+            "request": "launch",
+            "mainClass": "com.reborn.expense_service.ExpenseServiceApplication",
+            "projectName": "expense-service",
+            "env": {
+                "SPRING_PROFILES_ACTIVE": "local"
+            },
+            "args": [
+                "--spring.profiles.active=local",
+                "--spring.devtools.restart.enabled=true"
+            ],
+            "vmArgs": [
+                "-Dspring.profiles.active=local",
+                "-Dspring.devtools.restart.enabled=true"
+            ],
+            "cwd": "${workspaceFolder}/expense-service"
         }
     ]
 }
