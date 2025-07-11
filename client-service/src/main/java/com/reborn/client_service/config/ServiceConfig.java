@@ -17,6 +17,9 @@ public class ServiceConfig {
     @Value("${order.service.url}")
     private String orderServiceUrl;
     
+    @Value("${expense.service.url}")
+    private String expenseServiceUrl;
+    
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
@@ -32,5 +35,9 @@ public class ServiceConfig {
     
     public String getOrderServiceUrl() {
         return orderServiceUrl;
+    }
+    
+    public String getExpenseServiceUrl() {
+        return expenseServiceUrl;
     }
 } 

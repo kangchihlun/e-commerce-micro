@@ -55,11 +55,37 @@ public class ExpenseBasicServiceImpl implements ExpenseBasicService {
     private ReimburseApply createReimburseApply(BasicReq req){
         String user = "root";
         boolean isNew = StringUtils.isBlank(req.getFileNo());
-        ReimburseApply reimburseApply = isNew ? new ReimburseApply() :
-         reimburseApplyRepo.findById(req.getFileNo()).orElse(null);
+        
+        ReimburseApply reimburseApply;
+        if (isNew) {
+            // 如果是新記錄，生成一個新的檔案編號
+            String newFileNo = generateFileNo();
+            reimburseApply = new ReimburseApply();
+            reimburseApply.setFileNo(newFileNo);
+        } else {
+            // 如果是現有記錄，從資料庫查詢
+            reimburseApply = reimburseApplyRepo.findById(req.getFileNo()).orElse(null);
+            if (reimburseApply == null) {
+                // 如果找不到現有記錄，創建新的
+                reimburseApply = new ReimburseApply();
+                reimburseApply.setFileNo(req.getFileNo());
+            }
+        }
+        
         setCommonReimburseApplyFields(reimburseApply, req);
         setAuditFields(reimburseApply, user);
         return reimburseApply;
+    }
+    
+    /**
+     * 生成新的檔案編號
+     * @return 新的檔案編號
+     */
+    private String generateFileNo() {
+        // 使用時間戳和隨機數生成唯一檔案編號
+        String timestamp = String.valueOf(System.currentTimeMillis());
+        String random = String.valueOf((int)(Math.random() * 1000));
+        return "EXP" + timestamp.substring(timestamp.length() - 8) + random;
     }
 
     /**
@@ -68,10 +94,7 @@ public class ExpenseBasicServiceImpl implements ExpenseBasicService {
      * @param req 基本請求資料
      */
     private void setCommonReimburseApplyFields(ReimburseApply reimburseApply, BasicReq req) {
-        // 設置檔案編號
-        if (StringUtils.isNotBlank(req.getFileNo())) {
-            reimburseApply.setFileNo(req.getFileNo());
-        }
+        // 注意：檔案編號已在 createReimburseApply 方法中設置，這裡不需要重複設置
         
         // 設置預算年度
         if (req.getBudgetYear() != null) {
